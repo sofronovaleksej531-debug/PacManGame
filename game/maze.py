@@ -25,11 +25,11 @@ class Maze:
             [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ]
+        self.width = MAZE_WIDTH
+        self.height = MAZE_HEIGHT
         self.dots = []
         self.power_pellets = []
         self.load_dots()
-        self.width = MAZE_WIDTH
-        self.height = MAZE_HEIGHT
 
     def load_dots(self):
         for y in range(self.height):

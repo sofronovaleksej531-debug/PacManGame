@@ -38,8 +38,6 @@ class PacMan:
     def try_move(self, maze):
         grid_x = int(self.x // CELL_SIZE)
         grid_y = int(self.y // CELL_SIZE)
-        center_x = self.x + CELL_SIZE // 2
-        center_y = self.y + CELL_SIZE // 2
         
         if self.x % CELL_SIZE == 0 and self.y % CELL_SIZE == 0:
             if self.next_direction != self.direction:
@@ -60,61 +58,37 @@ class PacMan:
                 if can_change:
                     self.direction = self.next_direction
         
-        new_x = self.x
-        new_y = self.y
-        
         if self.direction == 0:
-            new_x = self.x + self.speed
-            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
+            next_x = self.x + self.speed
+            next_grid_x = int((next_x + CELL_SIZE // 2) // CELL_SIZE)
             next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if next_grid_x < self.width and next_grid_x >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.x = new_x
-                else:
-                    self.x = (next_grid_x - 1) * CELL_SIZE
+            if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                self.x = next_x
         
         elif self.direction == 180:
-            new_x = self.x - self.speed
-            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
+            next_x = self.x - self.speed
+            next_grid_x = int((next_x + CELL_SIZE // 2) // CELL_SIZE)
             next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if next_grid_x < self.width and next_grid_x >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.x = new_x
-                else:
-                    self.x = (next_grid_x + 1) * CELL_SIZE
+            if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                self.x = next_x
         
         elif self.direction == 90:
-            new_y = self.y - self.speed
+            next_y = self.y - self.speed
             next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((next_y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if next_grid_y < self.height and next_grid_y >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.y = new_y
-                else:
-                    self.y = (next_grid_y + 1) * CELL_SIZE
+            if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                self.y = next_y
         
         elif self.direction == 270:
-            new_y = self.y + self.speed
+            next_y = self.y + self.speed
             next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((next_y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if next_grid_y < self.height and next_grid_y >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.y = new_y
-                else:
-                    self.y = (next_grid_y - 1) * CELL_SIZE
-        
-        if self.x < 0:
-            self.x = 0
-        if self.x > (MAZE_WIDTH - 1) * CELL_SIZE:
-            self.x = (MAZE_WIDTH - 1) * CELL_SIZE
-        if self.y < 0:
-            self.y = 0
-        if self.y > (MAZE_HEIGHT - 1) * CELL_SIZE:
-            self.y = (MAZE_HEIGHT - 1) * CELL_SIZE
+            if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                self.y = next_y
     
     def get_position(self):
         return (int(self.x // CELL_SIZE), int(self.y // CELL_SIZE))

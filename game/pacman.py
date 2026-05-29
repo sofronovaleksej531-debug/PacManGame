@@ -36,48 +36,76 @@ class PacMan:
     def try_move(self, maze):
         grid_x = int(self.x // CELL_SIZE)
         grid_y = int(self.y // CELL_SIZE)
+        center_x = self.x + CELL_SIZE // 2
+        center_y = self.y + CELL_SIZE // 2
         
         if self.x % CELL_SIZE == 0 and self.y % CELL_SIZE == 0:
             if self.next_direction != self.direction:
+                can_change = False
                 if self.next_direction == 0:
                     if not maze.is_wall((grid_x + 1) * CELL_SIZE, grid_y * CELL_SIZE):
-                        self.direction = self.next_direction
+                        can_change = True
                 elif self.next_direction == 180:
                     if not maze.is_wall((grid_x - 1) * CELL_SIZE, grid_y * CELL_SIZE):
-                        self.direction = self.next_direction
+                        can_change = True
                 elif self.next_direction == 90:
                     if not maze.is_wall(grid_x * CELL_SIZE, (grid_y - 1) * CELL_SIZE):
-                        self.direction = self.next_direction
+                        can_change = True
                 elif self.next_direction == 270:
                     if not maze.is_wall(grid_x * CELL_SIZE, (grid_y + 1) * CELL_SIZE):
-                        self.direction = self.next_direction
+                        can_change = True
+                
+                if can_change:
+                    self.direction = self.next_direction
+        
+        new_x = self.x
+        new_y = self.y
         
         if self.direction == 0:
-            next_x = self.x + self.speed
-            next_y = self.y
-            if not maze.is_wall(next_x + 10, next_y + 15) and not maze.is_wall(next_x + 10, next_y + 15):
-                self.x = next_x
+            new_x = self.x + self.speed
+            new_center_x = new_x + CELL_SIZE // 2
+            new_center_y = center_y
+            grid_check_x = int(new_center_x // CELL_SIZE)
+            grid_check_y = int(new_center_y // CELL_SIZE)
+            
+            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
+                self.x = new_x
             else:
                 self.x = grid_x * CELL_SIZE
+        
         elif self.direction == 180:
-            next_x = self.x - self.speed
-            next_y = self.y
-            if not maze.is_wall(next_x + 20, next_y + 15):
-                self.x = next_x
+            new_x = self.x - self.speed
+            new_center_x = new_x + CELL_SIZE // 2
+            new_center_y = center_y
+            grid_check_x = int(new_center_x // CELL_SIZE)
+            grid_check_y = int(new_center_y // CELL_SIZE)
+            
+            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
+                self.x = new_x
             else:
                 self.x = (grid_x + 1) * CELL_SIZE
+        
         elif self.direction == 90:
-            next_x = self.x
-            next_y = self.y - self.speed
-            if not maze.is_wall(next_x + 15, next_y + 20):
-                self.y = next_y
+            new_y = self.y - self.speed
+            new_center_x = center_x
+            new_center_y = new_y + CELL_SIZE // 2
+            grid_check_x = int(new_center_x // CELL_SIZE)
+            grid_check_y = int(new_center_y // CELL_SIZE)
+            
+            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
+                self.y = new_y
             else:
                 self.y = (grid_y + 1) * CELL_SIZE
+        
         elif self.direction == 270:
-            next_x = self.x
-            next_y = self.y + self.speed
-            if not maze.is_wall(next_x + 15, next_y + 10):
-                self.y = next_y
+            new_y = self.y + self.speed
+            new_center_x = center_x
+            new_center_y = new_y + CELL_SIZE // 2
+            grid_check_x = int(new_center_x // CELL_SIZE)
+            grid_check_y = int(new_center_y // CELL_SIZE)
+            
+            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
+                self.y = new_y
             else:
                 self.y = grid_y * CELL_SIZE
     

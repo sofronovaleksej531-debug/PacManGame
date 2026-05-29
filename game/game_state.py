@@ -18,12 +18,14 @@ class GameState:
         self.lives = 3
         self.game_over = False
         self.won = False
-        self.frightened_mode = False
     
     def handle_input(self, key):
         self.pacman.handle_input(key)
     
     def update(self):
+        if self.game_over or self.won:
+            return
+        
         self.pacman.update(self.maze)
         
         pacman_pos = self.pacman.get_position()
@@ -35,7 +37,6 @@ class GameState:
         if points > 0:
             self.score += points
             if points == 50:
-                self.frightened_mode = True
                 for ghost in self.ghosts:
                     ghost.make_frightened()
         

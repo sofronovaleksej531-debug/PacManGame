@@ -68,5 +68,5 @@ class Maze:
             return 50
         return 0
     
-    def get_remianing_dots(self):
+    def get_remaining_dots(self):
         return len(self.dots) + len(self.power_pellets)

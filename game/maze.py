@@ -13,10 +13,10 @@ class Maze:
             [1,2,2,2,2,2,1,2,2,1,1,2,2,1,2,2,2,2,2,1],
             [1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1],
             [0,0,0,0,1,2,1,1,1,1,1,1,1,1,2,1,0,0,0,0],
-            [1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1],
-            [1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,1],
-            [1,2,1,1,1,2,1,1,2,1,1,2,1,1,2,1,1,1,2,1],
-            [1,2,2,2,1,2,2,2,2,2,2,2,2,2,2,1,2,2,2,1],
+            [1,1,1,1,1,2,1,1,4,4,4,4,1,1,2,1,1,1,1,1],
+            [1,2,2,2,2,2,1,1,4,1,1,4,1,1,2,2,2,2,2,1],
+            [1,2,1,1,1,2,1,1,4,1,1,4,1,1,2,1,1,1,2,1],
+            [1,2,2,2,1,2,2,2,4,4,4,4,2,2,2,1,2,2,2,1],
             [1,1,2,2,1,2,1,2,1,1,1,1,2,1,2,1,2,2,1,1],
             [0,0,2,2,1,2,1,2,1,1,1,1,2,1,2,1,2,2,0,0],
             [1,1,2,2,1,2,1,2,2,2,2,2,2,1,2,1,2,2,1,1],
@@ -36,6 +36,7 @@ class Maze:
         self.height = MAZE_HEIGHT
         self.dots = []
         self.power_pellets = []
+        self.ghost_door = (9, 9)
         self.load_dots()
     
     def load_dots(self):
@@ -63,6 +64,9 @@ class Maze:
                     pygame.draw.circle(screen, WHITE,
                                      (x * CELL_SIZE + CELL_SIZE//2, y * CELL_SIZE + CELL_SIZE//2),
                                      8)
+                elif self.layout[y][x] == 4:
+                    pygame.draw.rect(screen, PINK,
+                                   (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
     
     def is_wall(self, x, y):
         grid_x = int(x // CELL_SIZE)
@@ -70,6 +74,18 @@ class Maze:
         if 0 <= grid_y < self.height and 0 <= grid_x < self.width:
             return self.layout[grid_y][grid_x] == 1
         return True
+    
+    def is_ghost_door(self, x, y):
+        grid_x = int(x // CELL_SIZE)
+        grid_y = int(y // CELL_SIZE)
+        return self.layout[grid_y][grid_x] == 4
+    
+    def can_ghost_pass(self, x, y):
+        grid_x = int(x // CELL_SIZE)
+        grid_y = int(y // CELL_SIZE)
+        if 0 <= grid_y < self.height and 0 <= grid_x < self.width:
+            return self.layout[grid_y][grid_x] != 1
+        return False
     
     def eat_dot(self, x, y):
         grid_x = int(x // CELL_SIZE)
@@ -89,3 +105,6 @@ class Maze:
     
     def get_remaining_dots(self):
         return len(self.dots) + len(self.power_pellets)
+    
+    def get_ghost_spawn_points(self):
+        return [(10, 9), (10, 10), (9, 10), (11, 10)]

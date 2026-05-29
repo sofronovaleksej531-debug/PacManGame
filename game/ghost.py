@@ -3,7 +3,7 @@ import random
 from settings import *
 
 class Ghost:
-    def __init__(self, x, y, color, scatter_target):
+    def __init__(self, x, y, color, scatter_target, spawn_order):
         self.x = x * CELL_SIZE
         self.y = y * CELL_SIZE
         self.start_x = x * CELL_SIZE
@@ -16,8 +16,16 @@ class Ghost:
         self.mode_timer = 0
         self.frightened = False
         self.frightened_timer = 0
+        self.spawn_order = spawn_order
+        self.in_house = True
+        self.spawn_timer = spawn_order * 300
     
     def update(self, maze, pacman_pos):
+        if self.in_house:
+            self.spawn_timer -= 1
+            if self.spawn_timer <= 0:
+                self.in_house = False
+        
         if self.frightened:
             self.frightened_timer -= 1
             if self.frightened_timer <= 0:
@@ -41,13 +49,13 @@ class Ghost:
         if self.x % CELL_SIZE == 0 and self.y % CELL_SIZE == 0:
             possible_dirs = []
             
-            if self.direction != 180 and not maze.is_wall((grid_x + 1) * CELL_SIZE, grid_y * CELL_SIZE):
+            if self.direction != 180 and maze.can_ghost_pass((grid_x + 1) * CELL_SIZE, grid_y * CELL_SIZE):
                 possible_dirs.append(0)
-            if self.direction != 0 and not maze.is_wall((grid_x - 1) * CELL_SIZE, grid_y * CELL_SIZE):
+            if self.direction != 0 and maze.can_ghost_pass((grid_x - 1) * CELL_SIZE, grid_y * CELL_SIZE):
                 possible_dirs.append(180)
-            if self.direction != 270 and not maze.is_wall(grid_x * CELL_SIZE, (grid_y - 1) * CELL_SIZE):
+            if self.direction != 270 and maze.can_ghost_pass(grid_x * CELL_SIZE, (grid_y - 1) * CELL_SIZE):
                 possible_dirs.append(90)
-            if self.direction != 90 and not maze.is_wall(grid_x * CELL_SIZE, (grid_y + 1) * CELL_SIZE):
+            if self.direction != 90 and maze.can_ghost_pass(grid_x * CELL_SIZE, (grid_y + 1) * CELL_SIZE):
                 possible_dirs.append(270)
             
             if possible_dirs:
@@ -57,7 +65,10 @@ class Ghost:
                     if self.mode == 'scatter':
                         best_dir = self.get_best_direction(possible_dirs, grid_x, grid_y, self.scatter_target)
                     else:
-                        best_dir = self.get_best_direction(possible_dirs, grid_x, grid_y, pacman_pos)
+                        if self.in_house:
+                            best_dir = self.get_best_direction(possible_dirs, grid_x, grid_y, (10, 9))
+                        else:
+                            best_dir = self.get_best_direction(possible_dirs, grid_x, grid_y, pacman_pos)
                     self.direction = best_dir
         
         if self.direction == 0:
@@ -97,6 +108,8 @@ class Ghost:
         self.y = self.start_y
         self.direction = 180
         self.frightened = False
+        self.in_house = True
+        self.spawn_timer = self.spawn_order * 300
     
     def make_frightened(self):
         self.frightened = True

@@ -8,11 +8,12 @@ class GameState:
     def __init__(self):
         self.maze = Maze()
         self.pacman = PacMan()
+        spawn_points = self.maze.get_ghost_spawn_points()
         self.ghosts = [
-            Ghost(13, 11, RED, (0, 0)),
-            Ghost(13, 13, PINK, (MAZE_WIDTH-1, 0)),
-            Ghost(11, 13, CYAN, (MAZE_WIDTH-1, MAZE_HEIGHT-1)),
-            Ghost(15, 13, ORANGE, (0, MAZE_HEIGHT-1))
+            Ghost(spawn_points[0][0], spawn_points[0][1], RED, (0, 0), 0),
+            Ghost(spawn_points[1][0], spawn_points[1][1], PINK, (MAZE_WIDTH-1, 0), 1),
+            Ghost(spawn_points[2][0], spawn_points[2][1], CYAN, (MAZE_WIDTH-1, MAZE_HEIGHT-1), 2),
+            Ghost(spawn_points[3][0], spawn_points[3][1], ORANGE, (0, MAZE_HEIGHT-1), 3)
         ]
         self.score = 0
         self.lives = 3

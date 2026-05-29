@@ -9,6 +9,8 @@ class PacMan:
         self.next_direction = 0
         self.radius = CELL_SIZE // 2 - 2
         self.speed = PACMAN_SPEED
+        self.width = MAZE_WIDTH
+        self.height = MAZE_HEIGHT
         self.mouth_angle = 0
         self.mouth_direction = 1
     
@@ -63,51 +65,56 @@ class PacMan:
         
         if self.direction == 0:
             new_x = self.x + self.speed
-            new_center_x = new_x + CELL_SIZE // 2
-            new_center_y = center_y
-            grid_check_x = int(new_center_x // CELL_SIZE)
-            grid_check_y = int(new_center_y // CELL_SIZE)
+            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
-                self.x = new_x
-            else:
-                self.x = grid_x * CELL_SIZE
+            if next_grid_x < self.width and next_grid_x >= 0:
+                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                    self.x = new_x
+                else:
+                    self.x = (next_grid_x - 1) * CELL_SIZE
         
         elif self.direction == 180:
             new_x = self.x - self.speed
-            new_center_x = new_x + CELL_SIZE // 2
-            new_center_y = center_y
-            grid_check_x = int(new_center_x // CELL_SIZE)
-            grid_check_y = int(new_center_y // CELL_SIZE)
+            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
-                self.x = new_x
-            else:
-                self.x = (grid_x + 1) * CELL_SIZE
+            if next_grid_x < self.width and next_grid_x >= 0:
+                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                    self.x = new_x
+                else:
+                    self.x = (next_grid_x + 1) * CELL_SIZE
         
         elif self.direction == 90:
             new_y = self.y - self.speed
-            new_center_x = center_x
-            new_center_y = new_y + CELL_SIZE // 2
-            grid_check_x = int(new_center_x // CELL_SIZE)
-            grid_check_y = int(new_center_y // CELL_SIZE)
+            next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
-                self.y = new_y
-            else:
-                self.y = (grid_y + 1) * CELL_SIZE
+            if next_grid_y < self.height and next_grid_y >= 0:
+                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                    self.y = new_y
+                else:
+                    self.y = (next_grid_y + 1) * CELL_SIZE
         
         elif self.direction == 270:
             new_y = self.y + self.speed
-            new_center_x = center_x
-            new_center_y = new_y + CELL_SIZE // 2
-            grid_check_x = int(new_center_x // CELL_SIZE)
-            grid_check_y = int(new_center_y // CELL_SIZE)
+            next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
+            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
             
-            if not maze.is_wall(grid_check_x * CELL_SIZE, grid_check_y * CELL_SIZE):
-                self.y = new_y
-            else:
-                self.y = grid_y * CELL_SIZE
+            if next_grid_y < self.height and next_grid_y >= 0:
+                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
+                    self.y = new_y
+                else:
+                    self.y = (next_grid_y - 1) * CELL_SIZE
+        
+        if self.x < 0:
+            self.x = 0
+        if self.x > (MAZE_WIDTH - 1) * CELL_SIZE:
+            self.x = (MAZE_WIDTH - 1) * CELL_SIZE
+        if self.y < 0:
+            self.y = 0
+        if self.y > (MAZE_HEIGHT - 1) * CELL_SIZE:
+            self.y = (MAZE_HEIGHT - 1) * CELL_SIZE
     
     def get_position(self):
         return (int(self.x // CELL_SIZE), int(self.y // CELL_SIZE))

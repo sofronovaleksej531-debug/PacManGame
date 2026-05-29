@@ -13,13 +13,13 @@ class PacMan:
         self.mouth_direction = 1
     
     def handle_input(self, key):
-        if key == pygame.K_LEFT:
+        if key == pygame.K_a:
             self.next_direction = 180
-        elif key == pygame.K_RIGHT:
+        elif key == pygame.K_d:
             self.next_direction = 0
-        elif key == pygame.K_UP:
+        elif key == pygame.K_w:
             self.next_direction = 90
-        elif key == pygame.K_DOWN:
+        elif key == pygame.K_s:
             self.next_direction = 270
     
     def update(self, maze):

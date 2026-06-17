@@ -92,3 +92,7 @@ class GameState:
             restart_text = font_small.render('Press SPACE to restart', True, WHITE)
             restart_rect = restart_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 50))
             screen.blit(restart_text, restart_rect)
+    def reset_positions(self):
+        self.pacman = PacMan()
+        for ghost in self.ghosts:
+            ghost.reset_position()

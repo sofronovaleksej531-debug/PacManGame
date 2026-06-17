@@ -1,33 +1,36 @@
 import pygame
+import math
 from settings import *
 
 class PacMan:
     def __init__(self):
-        self.x = 14 * CELL_SIZE
-        self.y = 15 * CELL_SIZE
+        self.x = 14 * CELL_SIZE + CELL_SIZE // 2
+        self.y = 15 * CELL_SIZE + CELL_SIZE // 2
         self.direction = 0
         self.next_direction = 0
-        self.radius = CELL_SIZE // 2 - 2
+        self.radius = (CELL_SIZE // 2) - 2
         self.speed = PACMAN_SPEED
         self.width = MAZE_WIDTH
         self.height = MAZE_HEIGHT
         self.mouth_angle = 0
         self.mouth_direction = 1
+        self.start_x = self.x
+        self.start_y = self.y
     
     def handle_input(self, key):
-        if key == pygame.K_a:
+        if key == pygame.K_LEFT or key == pygame.K_a:
             self.next_direction = 180
-        elif key == pygame.K_d:
+        elif key == pygame.K_RIGHT or key == pygame.K_d:
             self.next_direction = 0
-        elif key == pygame.K_w:
+        elif key == pygame.K_UP or key == pygame.K_w:
             self.next_direction = 90
-        elif key == pygame.K_s:
+        elif key == pygame.K_DOWN or key == pygame.K_s:
             self.next_direction = 270
     
     def update(self, maze):
-        self.mouth_angle += 10 * self.mouth_direction
-        if self.mouth_angle >= 50:
-            self.mouth_angle = 50
+        self.mouth_angle += 4 * self.mouth_direction
+        if self.mouth_angle >= 30:
+            self.mouth_angle = 30
             self.mouth_direction = -1
         elif self.mouth_angle <= 0:
             self.mouth_angle = 0
@@ -36,119 +39,122 @@ class PacMan:
         self.try_move(maze)
     
     def try_move(self, maze):
-        grid_x = int(self.x // CELL_SIZE)
-        grid_y = int(self.y // CELL_SIZE)
-        center_x = self.x + CELL_SIZE // 2
-        center_y = self.y + CELL_SIZE // 2
-        
-        if self.x % CELL_SIZE == 0 and self.y % CELL_SIZE == 0:
-            if self.next_direction != self.direction:
-                can_change = False
-                if self.next_direction == 0:
-                    if not maze.is_wall((grid_x + 1) * CELL_SIZE, grid_y * CELL_SIZE):
-                        can_change = True
-                elif self.next_direction == 180:
-                    if not maze.is_wall((grid_x - 1) * CELL_SIZE, grid_y * CELL_SIZE):
-                        can_change = True
-                elif self.next_direction == 90:
-                    if not maze.is_wall(grid_x * CELL_SIZE, (grid_y - 1) * CELL_SIZE):
-                        can_change = True
-                elif self.next_direction == 270:
-                    if not maze.is_wall(grid_x * CELL_SIZE, (grid_y + 1) * CELL_SIZE):
-                        can_change = True
-                
-                if can_change:
-                    self.direction = self.next_direction
+        grid_x = round((self.x - CELL_SIZE // 2) / CELL_SIZE)
+        grid_y = round((self.y - CELL_SIZE // 2) / CELL_SIZE)
+
+        if self.next_direction != self.direction:
+            can_change = self.can_move_in_direction(maze, self.next_direction, grid_x, grid_y)
+            if can_change:
+                self.x = grid_x * CELL_SIZE + CELL_SIZE // 2
+                self.y = grid_y * CELL_SIZE + CELL_SIZE // 2
+                self.direction = self.next_direction
         
         new_x = self.x
         new_y = self.y
         
         if self.direction == 0:
             new_x = self.x + self.speed
-            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
-            
-            if next_grid_x < self.width and next_grid_x >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.x = new_x
-                else:
-                    self.x = (next_grid_x - 1) * CELL_SIZE
-        
         elif self.direction == 180:
             new_x = self.x - self.speed
-            next_grid_x = int((new_x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((self.y + CELL_SIZE // 2) // CELL_SIZE)
-            
-            if next_grid_x < self.width and next_grid_x >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.x = new_x
-                else:
-                    self.x = (next_grid_x + 1) * CELL_SIZE
-        
         elif self.direction == 90:
             new_y = self.y - self.speed
-            next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
-            
-            if next_grid_y < self.height and next_grid_y >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.y = new_y
-                else:
-                    self.y = (next_grid_y + 1) * CELL_SIZE
-        
         elif self.direction == 270:
             new_y = self.y + self.speed
-            next_grid_x = int((self.x + CELL_SIZE // 2) // CELL_SIZE)
-            next_grid_y = int((new_y + CELL_SIZE // 2) // CELL_SIZE)
-            
-            if next_grid_y < self.height and next_grid_y >= 0:
-                if not maze.is_wall(next_grid_x * CELL_SIZE, next_grid_y * CELL_SIZE):
-                    self.y = new_y
-                else:
-                    self.y = (next_grid_y - 1) * CELL_SIZE
+
+        if not self.check_collision(maze, new_x, new_y):
+            self.x = new_x
+            self.y = new_y
+        else:
+            self.x = grid_x * CELL_SIZE + CELL_SIZE // 2
+            self.y = grid_y * CELL_SIZE + CELL_SIZE // 2
+    
+    def can_move_in_direction(self, maze, direction, grid_x, grid_y):
+        if direction == 0:
+            return not maze.is_wall((grid_x + 1) * CELL_SIZE + CELL_SIZE // 2, 
+                                   grid_y * CELL_SIZE + CELL_SIZE // 2)
+        elif direction == 180:
+            return not maze.is_wall((grid_x - 1) * CELL_SIZE + CELL_SIZE // 2, 
+                                   grid_y * CELL_SIZE + CELL_SIZE // 2)
+        elif direction == 90:
+            return not maze.is_wall(grid_x * CELL_SIZE + CELL_SIZE // 2, 
+                                   (grid_y - 1) * CELL_SIZE + CELL_SIZE // 2)
+        elif direction == 270:
+            return not maze.is_wall(grid_x * CELL_SIZE + CELL_SIZE // 2, 
+                                   (grid_y + 1) * CELL_SIZE + CELL_SIZE // 2)
+        return False
+    
+    def check_collision(self, maze, x, y):
+        points = [
+            (x - self.radius + 2, y - self.radius + 2),
+            (x + self.radius - 2, y - self.radius + 2),
+            (x - self.radius + 2, y + self.radius - 2),
+            (x + self.radius - 2, y + self.radius - 2)
+        ]
         
-        if self.x < 0:
-            self.x = 0
-        if self.x > (MAZE_WIDTH - 1) * CELL_SIZE:
-            self.x = (MAZE_WIDTH - 1) * CELL_SIZE
-        if self.y < 0:
-            self.y = 0
-        if self.y > (MAZE_HEIGHT - 1) * CELL_SIZE:
-            self.y = (MAZE_HEIGHT - 1) * CELL_SIZE
+        for px, py in points:
+            if maze.is_wall(px, py):
+                return True
+        return False
     
     def get_position(self):
         return (int(self.x // CELL_SIZE), int(self.y // CELL_SIZE))
     
+    def reset_position(self):
+        self.x = self.start_x
+        self.y = self.start_y
+        self.direction = 0
+        self.next_direction = 0
+    
     def draw(self, screen):
-        center = (int(self.x + CELL_SIZE // 2), int(self.y + CELL_SIZE // 2))
-        
-        angle = self.mouth_angle
-        start_angle = self.direction + angle
-        end_angle = self.direction - angle
-        
-        pygame.draw.arc(screen, YELLOW, 
-                       (center[0] - self.radius, center[1] - self.radius,
-                        self.radius * 2, self.radius * 2),
-                       start_angle * 3.14159 / 180,
-                       end_angle * 3.14159 / 180,
-                       self.radius)
-        
-        pygame.draw.line(screen, YELLOW, center, 
-                        (center[0] + self.radius * 0.7, center[1]), self.radius)
-        
-        eye_radius = 3
+        center = (int(self.x), int(self.y))
+        mouth_angle_rad = math.radians(self.mouth_angle)
+
+        pygame.draw.circle(screen, YELLOW, center, self.radius)
+
         if self.direction == 0:
-            eye1 = (center[0] + 5, center[1] - 6)
-            eye2 = (center[0] + 5, center[1] + 6)
+            start_angle = -mouth_angle_rad
+            end_angle = mouth_angle_rad
         elif self.direction == 180:
-            eye1 = (center[0] - 5, center[1] - 6)
-            eye2 = (center[0] - 5, center[1] + 6)
+            start_angle = math.pi - mouth_angle_rad
+            end_angle = math.pi + mouth_angle_rad
         elif self.direction == 90:
-            eye1 = (center[0] - 6, center[1] - 5)
-            eye2 = (center[0] + 6, center[1] - 5)
+            start_angle = -math.pi/2 - mouth_angle_rad
+            end_angle = -math.pi/2 + mouth_angle_rad
+        elif self.direction == 270:
+            start_angle = math.pi/2 - mouth_angle_rad
+            end_angle = math.pi/2 + mouth_angle_rad
         else:
-            eye1 = (center[0] - 6, center[1] + 5)
-            eye2 = (center[0] + 6, center[1] + 5)
+            start_angle = -mouth_angle_rad
+            end_angle = mouth_angle_rad
+        points = [center]
+        num_points = 20
         
-        pygame.draw.circle(screen, BLACK, eye1, eye_radius)
-        pygame.draw.circle(screen, BLACK, eye2, eye_radius)
+        if start_angle <= end_angle:
+            for i in range(num_points + 1):
+                t = i / num_points
+                angle = start_angle + (end_angle - start_angle) * t
+                x = center[0] + self.radius * math.cos(angle)
+                y = center[1] + self.radius * math.sin(angle)
+                points.append((x, y))
+        else:
+            for i in range(num_points + 1):
+                t = i / num_points
+                angle = start_angle + (end_angle - start_angle) * t
+                x = center[0] + self.radius * math.cos(angle)
+                y = center[1] + self.radius * math.sin(angle)
+                points.append((x, y))
+        if len(points) > 2:
+            pygame.draw.polygon(screen, BLACK, points)
+        eye_radius = 2
+        if self.direction == 0:
+            eye_pos = (center[0] + 5, center[1] - 5)
+        elif self.direction == 180:
+            eye_pos = (center[0] - 5, center[1] - 5)
+        elif self.direction == 90:
+            eye_pos = (center[0] - 5, center[1] - 5)
+        elif self.direction == 270:
+            eye_pos = (center[0] - 5, center[1] + 5)
+        else:
+            eye_pos = (center[0] + 5, center[1] - 5)
+        
+        pygame.draw.circle(screen, BLACK, eye_pos, eye_radius)

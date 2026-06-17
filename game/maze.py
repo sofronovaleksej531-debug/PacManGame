@@ -10,7 +10,7 @@ class Maze:
             [1,2,1,1,1,2,1,1,2,1,1,2,1,1,2,1,1,1,2,1],
             [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
             [1,2,1,1,1,2,1,2,1,1,1,1,2,1,2,1,1,1,2,1],
-            [1,2,2,2,2,2,1,2,2,1,1,2,2,1,2,2,2,2,2,1],
+            [1,2,2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,2,2,1],
             [1,1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1],
             [0,0,0,0,1,2,1,1,1,1,1,1,1,1,2,1,0,0,0,0],
             [1,1,1,1,1,2,1,1,4,4,4,4,1,1,2,1,1,1,1,1],
@@ -108,3 +108,13 @@ class Maze:
     
     def get_ghost_spawn_points(self):
         return [(10, 9), (10, 10), (9, 10), (11, 10)]
+    def is_wall(self, x, y):
+        grid_x = int(x // CELL_SIZE)
+        grid_y = int(y // CELL_SIZE)
+
+        if grid_x < 0 or grid_x >= self.width or grid_y < 0 or grid_y >= self.height:
+            return True
+        if self.layout[grid_y][grid_x] == 4:
+            return False
+        
+        return self.layout[grid_y][grid_x] == 1

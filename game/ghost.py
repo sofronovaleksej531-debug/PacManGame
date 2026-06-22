@@ -21,6 +21,7 @@ class Ghost:
         self.spawn_timer = spawn_order * 300
         self.radius = CELL_SIZE // 2 - 2
         self.moving = True
+        self.speed = GHOST_SPEED
     
     def update(self, maze, pacman_pos):
         if self.in_house:
@@ -128,13 +129,13 @@ class Ghost:
             new_x = grid_x
             new_y = grid_y
             if dir == 0:
-                new_x += 1
+                new_x = grid_x + self.speed
             elif dir == 180:
-                new_x -= 1
+                new_x = grid_x - self.speed
             elif dir == 90:
-                new_y -= 1
+                new_y = grid_y - self.speed
             elif dir == 270:
-                new_y += 1
+                new_y = grid_y + self.speed
             
             if self.frightened:
                 dist = abs(new_x - target[0]) + abs(new_y - target[1])
@@ -171,7 +172,7 @@ class Ghost:
             if self.frightened_timer < 150 and self.frightened_timer % 20 < 10:
                 color = WHITE
             else:
-                color = BLUE
+                color = FRIGHTENED_BLUE
         else:
             color = self.color
         

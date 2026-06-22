@@ -26,12 +26,6 @@ class Maze:
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ]
         
-        for y in range(len(self.layout)):
-            for x in range(len(self.layout[y])):
-                if self.layout[y][x] == 0:
-                    if (x == 8 or x == 11) and (y == 8 or y == 14):
-                        self.layout[y][x] = 3
-        
         self.width = MAZE_WIDTH
         self.height = MAZE_HEIGHT
         self.dots = []

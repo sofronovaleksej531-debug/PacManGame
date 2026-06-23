@@ -41,10 +41,10 @@ class Ghost:
         if self.mode_timer <= 0:
             if self.mode == 'scatter':
                 self.mode = 'chase'
-                self.mode_timer = 2000
+                self.mode_timer = 20000
             else:
                 self.mode = 'scatter'
-                self.mode_timer = 700
+                self.mode_timer = 7000
         
         self.move(maze, pacman_pos)
     

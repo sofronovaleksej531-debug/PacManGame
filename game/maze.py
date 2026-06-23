@@ -105,7 +105,5 @@ class Maze:
 
         if grid_x < 0 or grid_x >= self.width or grid_y < 0 or grid_y >= self.height:
             return True
-        if self.layout[grid_y][grid_x] == 4:
-            return False
         
         return self.layout[grid_y][grid_x] == 1

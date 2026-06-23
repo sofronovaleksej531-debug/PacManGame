@@ -154,7 +154,5 @@ class PacMan:
             eye_pos = (center[0] - 5, center[1] - 5)
         elif self.direction == 270:
             eye_pos = (center[0] - 5, center[1] + 5)
-        else:
-            eye_pos = (center[0] + 5, center[1] - 5)
         
         pygame.draw.circle(screen, BLACK, eye_pos, eye_radius)

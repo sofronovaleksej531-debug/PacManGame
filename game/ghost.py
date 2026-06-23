@@ -19,7 +19,7 @@ class Ghost:
         self.spawn_order = spawn_order
         self.in_house = True
         self.spawn_timer = spawn_order * 300
-        self.radius = CELL_SIZE // 2 - 2
+        self.radius = RADIUS
         self.moving = True
         self.speed = GHOST_SPEED
     
